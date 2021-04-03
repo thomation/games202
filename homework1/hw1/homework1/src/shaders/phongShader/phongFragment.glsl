@@ -25,6 +25,8 @@ varying highp vec3 vNormal;
 #define PI2 6.283185307179586
 #define LIGHT_WIDTH 0.1
 #define SHADOW_MAP_DISTANCE 0.1
+#define FILTER_SIZE_FACTOR 0.5
+
 uniform sampler2D uShadowMap;
 
 varying vec4 vPositionFromLight;
@@ -85,8 +87,8 @@ void uniformDiskSamples( const in vec2 randomSeed ) {
 }
 
 float findBlocker( sampler2D shadowMap,  vec2 uv, float zReceiver ) {
-  uniformDiskSamples(uv);
-  // poissonDiskSamples(uv);
+  // uniformDiskSamples(uv);
+  poissonDiskSamples(uv);
   float depth = 0.0;
   int amount = 0;
   float region = (zReceiver - SHADOW_MAP_DISTANCE) / zReceiver * LIGHT_WIDTH;
@@ -123,7 +125,7 @@ float PCSS(sampler2D shadowMap, vec4 coords){
   // STEP 2: penumbra size
   float wPenumbra = (zReceiver - zBlocker) * LIGHT_WIDTH / zBlocker;
   // STEP 3: filtering
-  return PCF(shadowMap, coords, wPenumbra * 0.5, 1.0);
+  return PCF(shadowMap, coords, wPenumbra * FILTER_SIZE_FACTOR, 1.0);
 }
 
 
