@@ -103,8 +103,8 @@ float findBlocker( sampler2D shadowMap,  vec2 uv, float zReceiver ) {
 }
 
 float PCF(sampler2D shadowMap, vec4 coords, float filterSize, float shadowWeight) {
-  // uniformDiskSamples(coords.xy);
-  poissonDiskSamples(coords.xy);
+  uniformDiskSamples(coords.xy);
+  // poissonDiskSamples(coords.xy);
   float sum = 0.0;
   for(int i = 0; i <PCF_NUM_SAMPLES; i ++)
   {
@@ -123,7 +123,7 @@ float PCSS(sampler2D shadowMap, vec4 coords){
   // STEP 2: penumbra size
   float wPenumbra = (zReceiver - zBlocker) * LIGHT_WIDTH / zBlocker;
   // STEP 3: filtering
-  return PCF(shadowMap, coords, wPenumbra, 1.0);
+  return PCF(shadowMap, coords, wPenumbra * 0.5, 1.0);
 }
 
 
@@ -161,8 +161,8 @@ void main(void) {
   vec3 shadowCoord = vPositionFromLight.xyz / vPositionFromLight.w;
   shadowCoord = shadowCoord * 0.5 + 0.5;
   // visibility = useShadowMap(uShadowMap, vec4(shadowCoord, 1.0));
-  visibility = PCF(uShadowMap, vec4(shadowCoord, 1.0), 0.005, 1.0);
-  // visibility = PCSS(uShadowMap, vec4(shadowCoord, 1.0));
+  // visibility = PCF(uShadowMap, vec4(shadowCoord, 1.0), 0.005, 1.0);
+  visibility = PCSS(uShadowMap, vec4(shadowCoord, 1.0));
   vec3 phongColor = blinnPhong();
   gl_FragColor = vec4(phongColor * visibility, 1.0);
   // gl_FragColor = vec4(visibility,0,0, 1.0); 
