@@ -85,8 +85,8 @@ void uniformDiskSamples( const in vec2 randomSeed ) {
 }
 
 float findBlocker( sampler2D shadowMap,  vec2 uv, float zReceiver ) {
-  // uniformDiskSamples(uv);
-  poissonDiskSamples(uv);
+  uniformDiskSamples(uv);
+  // poissonDiskSamples(uv);
   float depth = 0.0;
   int amount = 0;
   float region = (zReceiver - SHADOW_MAP_DISTANCE) / zReceiver * LIGHT_WIDTH;
@@ -161,8 +161,8 @@ void main(void) {
   vec3 shadowCoord = vPositionFromLight.xyz / vPositionFromLight.w;
   shadowCoord = shadowCoord * 0.5 + 0.5;
   // visibility = useShadowMap(uShadowMap, vec4(shadowCoord, 1.0));
-  // visibility = PCF(uShadowMap, vec4(shadowCoord, 1.0), 0.02, 1.0);
-  visibility = PCSS(uShadowMap, vec4(shadowCoord, 1.0));
+  visibility = PCF(uShadowMap, vec4(shadowCoord, 1.0), 0.005, 1.0);
+  // visibility = PCSS(uShadowMap, vec4(shadowCoord, 1.0));
   vec3 phongColor = blinnPhong();
   gl_FragColor = vec4(phongColor * visibility, 1.0);
   // gl_FragColor = vec4(visibility,0,0, 1.0); 
