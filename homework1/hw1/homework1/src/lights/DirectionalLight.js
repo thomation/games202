@@ -35,7 +35,7 @@ class DirectionalLight {
         console.log(viewMatrix);
         // Projection transform
         console.log("projection");
-        mat4.ortho(projectionMatrix, -100, 100, -100, 100, 1, 200.0);
+        mat4.ortho(projectionMatrix, -100, 100, -100, 100, 1, 500.0);
         console.log(projectionMatrix);
 
         mat4.multiply(lightMVP, projectionMatrix, viewMatrix);

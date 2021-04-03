@@ -87,8 +87,16 @@ float findBlocker( sampler2D shadowMap,  vec2 uv, float zReceiver ) {
 	return 1.0;
 }
 
-float PCF(sampler2D shadowMap, vec4 coords) {
-  return 1.0;
+float PCF(sampler2D shadowMap, vec4 coords, float filterSize, float shadowWeight) {
+  uniformDiskSamples(coords.xy);
+  // poissonDiskSamples(coords.xy);
+  float sum = 0.0;
+  for(int i = 0; i <NUM_SAMPLES; i ++)
+  {
+    float close = unpack(texture2D(shadowMap, coords.xy + poissonDisk[i] * filterSize));
+    sum += (coords.z - EPS < close ? 1.0 : 0.0);
+  }
+  return (1.0 - shadowWeight) + shadowWeight * sum / float(NUM_SAMPLES);
 }
 
 float PCSS(sampler2D shadowMap, vec4 coords){
@@ -106,7 +114,7 @@ float PCSS(sampler2D shadowMap, vec4 coords){
 
 float useShadowMap(sampler2D shadowMap, vec4 shadowCoord){
   float close = unpack(texture2D(shadowMap, shadowCoord.xy));
-  return shadowCoord.z - 0.005 < close ? 1.0 : 0.0;
+  return shadowCoord.z - EPS < close ? 1.0 : 0.0;
 }
 
 vec3 blinnPhong() {
@@ -137,12 +145,11 @@ void main(void) {
   float visibility = 1.0;
   vec3 shadowCoord = vPositionFromLight.xyz / vPositionFromLight.w;
   shadowCoord = shadowCoord * 0.5 + 0.5;
-  visibility = useShadowMap(uShadowMap, vec4(shadowCoord, 1.0));
-  //visibility = PCF(uShadowMap, vec4(shadowCoord, 1.0));
-  //visibility = PCSS(uShadowMap, vec4(shadowCoord, 1.0));
+  // visibility = useShadowMap(uShadowMap, vec4(shadowCoord, 1.0));
+  visibility = PCF(uShadowMap, vec4(shadowCoord, 1.0), 0.005, 0.5);
+  // visibility = PCSS(uShadowMap, vec4(shadowCoord, 1.0));
   vec3 phongColor = blinnPhong();
   gl_FragColor = vec4(phongColor * visibility, 1.0);
   // gl_FragColor = vec4(phongColor, 1.0);
-
-  // gl_FragColor = vec4((vPositionFromLight.z / vPositionFromLight.w + 1.0) / 2.0, 0, 0, 1);
+  // gl_FragColor = vec4(visibility,0,0, 1.0); 
 }
