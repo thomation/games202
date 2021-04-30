@@ -126,9 +126,18 @@ namespace ProjEnv
                     // TODO: here you need to compute light sh of each face of cubemap of each pixel
                     // TODO: 此处你需要计算每个像素下cubemap某个面的球谐系数
                     Eigen::Vector3f dir = cubemapDirs[i * width * height + y * width + x];
+                    Eigen::Vector3d ddir = Eigen::Vector3d(dir.x(), dir.y(), dir.z()).normalized();
                     int index = (y * width + x) * channel;
                     Eigen::Array3f Le(images[i][index + 0], images[i][index + 1],
                                       images[i][index + 2]);
+                    double weight = CalcArea(x, y, width, height);
+                    for (int l = 0; l <= SHOrder; l++) {
+                        for (int m = -l; m <= l; m++) {
+                            int i = sh::GetIndex(l, m);
+                            double shv = sh::EvalSH(l, m, ddir);
+                            SHCoeffiecents[i] += shv * weight * Le.array();
+                        }
+                    }
                 }
             }
         }
@@ -199,6 +208,7 @@ public:
         // Projection transport
         m_TransportSHCoeffs.resize(SHCoeffLength, mesh->getVertexCount());
         fout << mesh->getVertexCount() << std::endl;
+        
         for (int i = 0; i < mesh->getVertexCount(); i++)
         {
             const Point3f &v = mesh->getVertexPositions().col(i);
@@ -210,13 +220,15 @@ public:
                 {
                     // TODO: here you need to calculate unshadowed transport term of a given direction
                     // TODO: 此处你需要计算给定方向下的unshadowed传输项球谐函数值
-                    return 0;
+                    return 0.0;
+
                 }
                 else
                 {
                     // TODO: here you need to calculate shadowed transport term of a given direction
                     // TODO: 此处你需要计算给定方向下的shadowed传输项球谐函数值
-                    return 0;
+                    return 0.0;
+
                 }
             };
             auto shCoeff = sh::ProjectFunction(SHOrder, shFunc, m_SampleCount);
