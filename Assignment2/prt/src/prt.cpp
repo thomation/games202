@@ -130,6 +130,7 @@ namespace ProjEnv
                     int index = (y * width + x) * channel;
                     Eigen::Array3f Le(images[i][index + 0], images[i][index + 1],
                                       images[i][index + 2]);
+                    //Eigen::Array3f Le(0.5, 0.5, 0.5);
                     double weight = CalcArea(x, y, width, height);
                     for (int l = 0; l <= SHOrder; l++) {
                         for (int m = -l; m <= l; m++) {
@@ -216,18 +217,29 @@ public:
             auto shFunc = [&](double phi, double theta) -> double {
                 Eigen::Array3d d = sh::ToVector(phi, theta);
                 const auto wi = Vector3f(d.x(), d.y(), d.z());
+                const auto h = wi.dot(n);
                 if (m_Type == Type::Unshadowed)
                 {
                     // TODO: here you need to calculate unshadowed transport term of a given direction
                     // TODO: 此处你需要计算给定方向下的unshadowed传输项球谐函数值
-                    return 0.0;
-
+                    return h > 0.0 ? h : 0.0;
                 }
                 else
                 {
                     // TODO: here you need to calculate shadowed transport term of a given direction
                     // TODO: 此处你需要计算给定方向下的shadowed传输项球谐函数值
-                    return 0.0;
+                    if (h <= 0.0)
+                        return 0.0;
+                    Ray3f ray;
+                    ray.o = v;
+                    ray.d = wi.normalized();
+                    ray.mint = 0.1;
+                    ray.maxt = std::numeric_limits<float>::infinity();
+                    ray.update();
+                    Intersection its;
+                    if (scene->rayIntersect(ray, its))
+                        return 0.0f;
+                    return h;
 
                 }
             };
@@ -287,10 +299,10 @@ public:
         // TODO: you need to delete the following four line codes after finishing your calculation to SH,
         //       we use it to visualize the normals of model for debug.
         // TODO: 在完成了球谐系数计算后，你需要删除下列四行，这四行代码的作用是用来可视化模型法线
-        if (c.isZero()) {
+  /*      if (c.isZero()) {
             auto n_ = its.shFrame.n.cwiseAbs();
             return Color3f(n_.x(), n_.y(), n_.z());
-        }
+        }*/
         return c;
     }
 
