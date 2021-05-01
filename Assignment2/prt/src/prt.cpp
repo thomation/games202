@@ -209,7 +209,7 @@ public:
         // Projection transport
         m_TransportSHCoeffs.resize(SHCoeffLength, mesh->getVertexCount());
         fout << mesh->getVertexCount() << std::endl;
-        
+       
         for (int i = 0; i < mesh->getVertexCount(); i++)
         {
             const Point3f &v = mesh->getVertexPositions().col(i);
@@ -234,7 +234,7 @@ public:
                     ray.o = v;
                     ray.d = wi.normalized();
                     ray.mint = 0.1;
-                    ray.maxt = std::numeric_limits<float>::infinity();
+                    ray.maxt = 1e4f;
                     ray.update();
                     Intersection its;
                     if (scene->rayIntersect(ray, its))
