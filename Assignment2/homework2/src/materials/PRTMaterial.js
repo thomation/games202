@@ -2,7 +2,7 @@ class PRTMaterial extends Material {
 
     constructor(color, translate, scale, vertexShader, fragmentShader) {
         console.log('PRTMaterial');
-        let envlight = precomputeL[guiParams.envmapId];
+        let envlight = precomputeL[0];
         console.log(envlight);
         var mr = new Float32Array(envlight.length);
         var mg = new Float32Array(envlight.length);
@@ -18,7 +18,7 @@ class PRTMaterial extends Material {
             'uPrecomputeLR':{type: 'matrix3fv', value: mr}, 
             'uPrecomputeLG':{type:'matrix3fv', value: mg},
             'uPrecomputeLB':{type:'matrix3fv', value: mb},
-            'uLightWeight' :{type: '1f', value:0.7}
+            'uLightWeight' :{type: '1f', value:0.5}
         }, [
             'aPrecomputeLT'
         ], vertexShader, fragmentShader, null);

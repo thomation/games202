@@ -233,7 +233,7 @@ public:
                     Ray3f ray;
                     ray.o = v;
                     ray.d = wi.normalized();
-                    ray.mint = 0.1;
+                    ray.mint = 0.005;
                     ray.maxt = 1e4f;
                     ray.update();
                     Intersection its;
