@@ -4,15 +4,18 @@ class PRTMaterial extends Material {
         console.log('PRTMaterial');
 
         super({
-            // Phong
             'uSampler': { type: 'texture', value: color },
-        }, [], vertexShader, fragmentShader, null);
+        }, [
+            'aPrecomputeLT'
+        ], vertexShader, fragmentShader, null);
     }
 }
 
 async function buildPRTMaterial(color, translate, scale, vertexPath, fragmentPath) {
 
     console.log('build prt material');
+    console.log(precomputeL[guiParams.envmapId]);
+    console.log(precomputeLT[guiParams.envmapId]);
     let vertexShader = await getShaderString(vertexPath);
     let fragmentShader = await getShaderString(fragmentPath);
 

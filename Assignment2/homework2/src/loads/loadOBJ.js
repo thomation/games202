@@ -58,10 +58,7 @@ function loadOBJ(renderer, path, name, objMaterial, transform) {
 									shadowMaterial = buildShadowMaterial(light, Translation, Scale, "./src/shaders/shadowShader/shadowVertex.glsl", "./src/shaders/shadowShader/shadowFragment.glsl");
 									break;
 								case 'PRTMaterial':
-									console.log('build prt material pre');
-									console.log(Scale);
 									material = buildPRTMaterial(colorMap, Translation, Scale, "./src/shaders/PRTShader/PRTVertex.glsl", "./src/shaders/PRTShader/PRTFragment.glsl");
-									console.log('build prt material post');
 									break;
 								case 'SkyBoxMaterial':
 									material = buildSkyBoxMaterial("./src/shaders/skyBoxShader/SkyBoxVertex.glsl", "./src/shaders/skyBoxShader/SkyBoxFragment.glsl");
