@@ -35,7 +35,7 @@ function loadOBJ(renderer, path, name, objMaterial, transform) {
 
 							let mesh = new Mesh({ name: 'aVertexPosition', array: geo.attributes.position.array },
 								{ name: 'aNormalPosition', array: geo.attributes.normal.array },
-								//{ name: 'aTextureCoord', array: geo.attributes.uv.array },
+								// { name: 'aTextureCoord', array: geo.attributes.uv.array },
 								null,
 								indices, transform);
 							let colorMap = new Texture();
@@ -57,8 +57,12 @@ function loadOBJ(renderer, path, name, objMaterial, transform) {
 									material = buildPhongMaterial(colorMap, mat.specular.toArray(), light, Translation, Scale, "./src/shaders/phongShader/phongVertex.glsl", "./src/shaders/phongShader/phongFragment.glsl");
 									shadowMaterial = buildShadowMaterial(light, Translation, Scale, "./src/shaders/shadowShader/shadowVertex.glsl", "./src/shaders/shadowShader/shadowFragment.glsl");
 									break;
-								// TODO: Add your PRTmaterial here
-
+								case 'PRTMaterial':
+									console.log('build prt material pre');
+									console.log(Scale);
+									material = buildPRTMaterial(colorMap, Translation, Scale, "./src/shaders/PRTShader/PRTVertex.glsl", "./src/shaders/PRTShader/PRTFragment.glsl");
+									console.log('build prt material post');
+									break;
 								case 'SkyBoxMaterial':
 									material = buildSkyBoxMaterial("./src/shaders/skyBoxShader/SkyBoxVertex.glsl", "./src/shaders/skyBoxShader/SkyBoxFragment.glsl");
 									break;
