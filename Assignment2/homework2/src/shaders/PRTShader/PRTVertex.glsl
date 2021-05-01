@@ -7,6 +7,7 @@ uniform mat4 uProjectionMatrix;
 uniform mat3 uPrecomputeLR;
 uniform mat3 uPrecomputeLG;
 uniform mat3 uPrecomputeLB;
+uniform float uLightWeight;
 
 varying vec3 vColor;
 
@@ -16,7 +17,7 @@ float compute_color(mat3 precomputeL)
   color += dot(aPrecomputeLT[0], precomputeL[0]);
   color += dot(aPrecomputeLT[1], precomputeL[1]);
   color += dot(aPrecomputeLT[2], precomputeL[2]);
-  return color;
+  return color * uLightWeight;
 }
 void main(void) {
 
