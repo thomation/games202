@@ -137,12 +137,12 @@ vec3 EvalDirectionalLight(vec2 uv) {
   float v = GetGBufferuShadow(uv);
   return Le * v;
 }
-#define STEP_NUM 50
+#define STEP_NUM 30
 bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
   vec2 oriuv = GetScreenCoordinate(ori);
   float orid = GetGBufferDepth(oriuv);
   float distance = 1.0;
-  float step = 0.01;
+  float step = 0.5;
   for(int i = 0; i < STEP_NUM; i ++)
   {
     vec3 checkpos = ori + dir * distance; 
@@ -167,8 +167,7 @@ void main() {
   vec3 viewDir = normalize(uCameraPos - vPosWorld.xyz);
   vec3 lightDir = normalize(uLightDir);
   // 1  
-  vec3 L = vec3(0.0);
-  L += EvalDiffuse(lightDir, viewDir, uv) * EvalDirectionalLight(uv);
+  vec3 L = EvalDiffuse(lightDir, viewDir, uv) * EvalDirectionalLight(uv);
   // vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
   //gl_FragColor = vec4(color,  1.0);
   
@@ -185,12 +184,12 @@ void main() {
   vec3 L2 = vec3(0.0);
   float pdf;
   for(int i = 0; i < SAMPLE_NUM; i ++) {
-    vec3 dir = SampleHemisphereUniform(s, pdf); 
+    // vec3 dir = normalize(SampleHemisphereUniform(s, pdf)); 
+    vec3 dir = normalize(SampleHemisphereCos(s, pdf));
     vec3 hitPos;
-    if(RayMarch(vPosWorld.xyz, normalize(dir), hitPos)) {
+    if(RayMarch(vPosWorld.xyz, dir, hitPos)) {
       vec2 hituv = GetScreenCoordinate(hitPos);
-      vec3 indirectViewDir = normalize(vPosWorld.xyz - hitPos);
-      L2 += EvalDiffuse(dir, viewDir, uv) * EvalDiffuse(lightDir, indirectViewDir, hituv) * EvalDirectionalLight(hituv) / pdf;
+      L2 += EvalDiffuse(dir, viewDir, uv) * EvalDiffuse(lightDir, -dir, hituv) * EvalDirectionalLight(hituv) / pdf;
     }
   }
   L2 /= float(SAMPLE_NUM);
