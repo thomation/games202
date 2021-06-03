@@ -139,6 +139,22 @@ vec3 EvalDirectionalLight(vec2 uv) {
 }
 
 bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
+  vec2 oriuv = GetScreenCoordinate(ori);
+  float orid = GetGBufferDepth(oriuv);
+  float distance = 1.0;
+  float step = 0.05;
+  for(int i = 0; i < 200; i ++)
+  {
+    vec3 checkpos = ori + dir * distance; 
+    vec2 checkuv = GetScreenCoordinate(checkpos);
+    float checkd = GetGBufferDepth(checkuv);
+    if(orid > checkd)
+    {
+      hitPos = checkpos;
+      return true;
+    }
+    distance += step;
+  }
   return false;
 }
 
@@ -150,9 +166,17 @@ void main() {
   vec2 uv = GetScreenCoordinate(vPosWorld.xyz);
   vec3 viewDir = normalize(uCameraPos - vPosWorld.xyz);
   vec3 lightDir = normalize(uLightDir);
+ /* 1  
   vec3 L = vec3(0.0);
   L += EvalDiffuse(lightDir, viewDir, uv) * EvalDirectionalLight(uv);
   vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
-  float d = GetGBufferDepth(uv);
   gl_FragColor = vec4(color,  1.0);
+  */
+
+  vec3 hitPos = vec3(0.0);
+  vec3 color = GetGBufferDiffuse(uv);
+  vec3 normal = normalize(GetGBufferNormalWorld(uv));
+  if(RayMarch(vPosWorld.xyz, normalize(reflect(-viewDir, normal)), hitPos))
+    color = GetGBufferDiffuse(GetScreenCoordinate(hitPos));
+  gl_FragColor = vec4(color, 1);
 }
