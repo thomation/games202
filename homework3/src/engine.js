@@ -79,14 +79,14 @@ function GAMES202Main() {
 		'y': -0.9,
 		'z': -0.2,
 	};
-	// */
+	//  */
 	let lightUp = [1, 0, 0];
 	const directionLight = new DirectionalLight(lightRadiance, lightPos, lightDir, lightUp, renderer.gl);
 	renderer.addLight(directionLight);
 
 	// Add shapes
-	loadGLTF(renderer, 'assets/cube/', 'cube1', 'SSRMaterial');
-	// loadGLTF(renderer, 'assets/cube/', 'cube2', 'SSRMaterial');
+	// loadGLTF(renderer, 'assets/cube/', 'cube1', 'SSRMaterial');
+	loadGLTF(renderer, 'assets/cube/', 'cube2', 'SSRMaterial');
 	// loadGLTF(renderer, 'assets/cave/', 'cave', 'SSRMaterial');
 
 	function createGUI() {
