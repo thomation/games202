@@ -137,7 +137,7 @@ vec3 EvalDirectionalLight(vec2 uv) {
   float v = GetGBufferuShadow(uv);
   return Le * v;
 }
-#define STEP_NUM 50
+#define STEP_NUM 30
 #define STEP 0.1
 #define EPS 0.05
 bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
@@ -170,23 +170,19 @@ void main() {
   vec3 normal = normalize(GetGBufferNormalWorld(uv));
   LocalBasis(normal, b1, b2);
   mat3 t = mat3(b1, b2, normal);
+  vec3 color = vec3(0.0);
   // float pdf;
   // vec3 localdir = normalize(SampleHemisphereUniform(s, pdf)); 
   // gl_FragColor = vec4(t * localdir, 1.0);
   // 1  
   /*
-  vec3 L = EvalDiffuse(lightDir, viewDir, uv) * EvalDirectionalLight(uv);
-  vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
-  gl_FragColor = vec4(color,  1.0);
+  color = EvalDiffuse(lightDir, viewDir, uv) * EvalDirectionalLight(uv);
  */ 
   // 2
   /*
   vec3 hitPos = vec3(0.0);
-  vec3 color = vec3(0.0);
-  vec3 normal = normalize(GetGBufferNormalWorld(uv));
   if(RayMarch(vPosWorld.xyz, normalize(reflect(-viewDir, normal)), hitPos))
-    color =  GetGBufferDiffuse(GetScreenCoordinate(hitPos));
-  gl_FragColor = vec4(color, 1);
+    color = GetGBufferDiffuse(GetScreenCoordinate(hitPos));
  */ 
   //3
   // /*
@@ -204,7 +200,7 @@ void main() {
   }
   L2 /= float(SAMPLE_NUM);
   vec3 L = EvalDiffuse(lightDir, viewDir, uv) * EvalDirectionalLight(uv);
-  vec3 color = pow(clamp(L + L2, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
-  gl_FragColor=vec4(color, 1.0);
+  color = L + L2;
 //  */ 
+  gl_FragColor = vec4(pow(clamp(color, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2)), 1.0);
 }
