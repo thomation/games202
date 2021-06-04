@@ -137,23 +137,23 @@ vec3 EvalDirectionalLight(vec2 uv) {
   float v = GetGBufferuShadow(uv);
   return Le * v;
 }
-#define STEP_NUM 30
+#define STEP_NUM 500
+#define STEP 0.01
+#define EPS 0.01
 bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
-  vec2 oriuv = GetScreenCoordinate(ori);
-  float orid = GetGBufferDepth(oriuv);
-  float distance = 1.0;
-  float step = 0.5;
+  vec3 currentpos = ori + dir * 0.1; 
+  vec3 inc = dir * STEP;
   for(int i = 0; i < STEP_NUM; i ++)
   {
-    vec3 checkpos = ori + dir * distance; 
-    vec2 checkuv = GetScreenCoordinate(checkpos);
-    float checkd = GetGBufferDepth(checkuv);
-    if(orid > checkd)
+    float currentdepth = GetDepth(currentpos);
+    vec2 currentuv = GetScreenCoordinate(currentpos);
+    float checkdepth = GetGBufferDepth(currentuv);
+    if(abs(currentdepth - checkdepth) < EPS)
     {
-      hitPos = checkpos;
+      hitPos = currentpos;
       return true;
     }
-    distance += step;
+    currentpos += inc; 
   }
   return false;
 }
@@ -167,20 +167,22 @@ void main() {
   vec3 viewDir = normalize(uCameraPos - vPosWorld.xyz);
   vec3 lightDir = normalize(uLightDir);
   // 1  
+  /*
   vec3 L = EvalDiffuse(lightDir, viewDir, uv) * EvalDirectionalLight(uv);
   // vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
   //gl_FragColor = vec4(color,  1.0);
-  
+ */ 
   // 2
-  /*
+  // /*
   vec3 hitPos = vec3(0.0);
   vec3 color = vec3(0.0);
   vec3 normal = normalize(GetGBufferNormalWorld(uv));
   if(RayMarch(vPosWorld.xyz, normalize(reflect(-viewDir, normal)), hitPos))
     color =  GetGBufferDiffuse(GetScreenCoordinate(hitPos));
   gl_FragColor = vec4(color, 1);
- */ 
+//  */ 
   //3
+  /*
   vec3 L2 = vec3(0.0);
   float pdf;
   for(int i = 0; i < SAMPLE_NUM; i ++) {
@@ -195,5 +197,5 @@ void main() {
   L2 /= float(SAMPLE_NUM);
   vec3 color = pow(clamp(L + L2, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
   gl_FragColor=vec4(color, 1.0);
-  
+ */ 
 }
