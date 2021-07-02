@@ -22,7 +22,6 @@ const float PI = 3.14159265359;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
-    return 1.0;
     float a2 = pow(roughness, 4.0);
     float nh2 = pow(dot(N, H), 2.0);
     float d = nh2 * (a2 - 1.0) + 1.0;
@@ -68,11 +67,10 @@ vec3 MultiScatterBRDF(float NdotL, float NdotV)
   // copper
   vec3 edgetint = vec3(0.827, 0.792, 0.678);
   vec3 F_avg = AverageFresnel(albedo, edgetint);
-  
-  // TODO: To calculate fms and missing energy here
 
-
-  return vec3(1.0);
+  vec3 fms = (vec3(1.0) - E_o) * (vec3(1.0) - E_i) / (vec3(1.0) - E_avg) / PI;
+  vec3 fadd = F_avg * E_avg / (1.0 - F_avg * (1.0 - E_avg));
+  return fms * fadd;
   
 }
 
