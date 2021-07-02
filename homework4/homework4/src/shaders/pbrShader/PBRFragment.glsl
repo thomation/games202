@@ -22,7 +22,7 @@ const float PI = 3.14159265359;
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
    // TODO: To calculate GGX NDF here
-    
+    return 1.0;
 }
 
 float GeometrySchlickGGX(float NdotV, float roughness)
