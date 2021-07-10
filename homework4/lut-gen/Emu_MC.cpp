@@ -88,11 +88,12 @@ Vec3f IntegrateBRDF(Vec3f V, float roughness, float NdotV) {
     for (int i = 0; i < sample_count; i++) {
       // TODO: To calculate (fr * ni) / p_o here
         Vec3f L = sampleList.directions[i];
-        float NdotL = dot(N, L);
+        float NdotL = std::max(dot(N, L), 0.0f);
         float G = GeometrySmith(roughness, NdotV, NdotL);
         Vec3f H = normalize(V + L);
         float D = DistributionGGX(N, H, roughness);
-        Vec3f F = F0 + (One - F0) * pow((1.0 - dot(V, H)), 5.0);
+        float VdotH = std::max(dot(V, H), 0.0f);
+        Vec3f F = F0 + (One - F0) * pow((1.0 - VdotH), 5.0);
         float denominator = std::max((4.0 * NdotL * NdotV), 0.001);
         Vec3f BRDF = F * G * D / denominator;
         Vec3f Lo = BRDF * NdotL / sampleList.PDFs[i];
