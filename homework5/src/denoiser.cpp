@@ -60,13 +60,16 @@ Buffer2D<Float3> Denoiser::Filter(const FrameInfo &frameInfo) {
 						float dis2 = i * i + j * j;
                         float cd2 = SqrDistance(frameInfo.m_beauty(px, px),
                                                 frameInfo.m_beauty(x, y)); 
-                        float dn2 = Sqr(acos(Dot(frameInfo.m_normal(x, y),
+                        float dn2 = Sqr(SafeAcos(Dot(frameInfo.m_normal(x, y),
                                          frameInfo.m_normal(px, py))));
                         float pos_dist = Distance(frameInfo.m_position(px, py),
                                                   frameInfo.m_position(x, y));
                         float dp2 = pos_dist == 0 ? 0 : Sqr(Dot(frameInfo.m_normal(x, y),
                             (frameInfo.m_position(px, py) - frameInfo.m_position(x, y)) / pos_dist));
-						float weight = std::exp(-0.5 * dis2 / Sqr(m_sigmaCoord) - 0.5* cd2 / Sqr(m_sigmaColor) - 0.5 * dn2 / Sqr(m_sigmaNormal) - 0.5 * dp2 / Sqr(m_sigmaPlane));
+						float weight = std::exp(-0.5 * dis2 / Sqr(m_sigmaCoord) 
+                            - 0.5* cd2 / Sqr(m_sigmaColor)
+                            - 0.5 * dn2 / Sqr(m_sigmaNormal)
+                            - 0.5 * dp2 / Sqr(m_sigmaPlane));
 						filteredImage(x, y) += frameInfo.m_beauty(px, py) * weight;
 						sum_weight += weight;
                     }
