@@ -43,24 +43,24 @@ void Denoiser::TemporalAccumulation(const Buffer2D<Float3> &curFilteredColor) {
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             // TODO: Temporal clamp
-            Float3 color = m_accColor(x, y);
-            Float3 sigma = Sqr(color);
-            int size = 1;
+            Float3 average(0);
+            Float3 sigma(0);
+            int size = 0;
             for (int i = -kernelRadius; i <= kernelRadius; i++) {
                 for (int j = -kernelRadius; j <= kernelRadius; j++) {
                     int px = x + i;
                     int py = y + j;
-                    if (px >= 0 && px < width && px != x && py >= 0 && py < height && py != y) {
-                        color += curFilteredColor(px, py);
+                    if (px >= 0 && px < width && py >= 0 && py < height) {
+                        average += curFilteredColor(px, py);
                         sigma += Sqr(curFilteredColor(x, y) - curFilteredColor(px, py));
                         size++;
                     }
                 }
             }
-            Float3 average = color / size;
+            average /= size;
             sigma /= size;
             sigma = Float3(std::sqrt(sigma.x), std::sqrt(sigma.y), std::sqrt(sigma.z));
-            color = Clamp(color, average - sigma * m_colorBoxK, average + sigma * m_colorBoxK);
+            Float3 color = Clamp(m_accColor(x, y), average - sigma * m_colorBoxK, average + sigma * m_colorBoxK);
             // TODO: Exponential moving average
             float alpha = m_valid(x, y) ? m_alpha : 1.0f;
             m_misc(x, y) = Lerp(color, curFilteredColor(x, y), alpha);
