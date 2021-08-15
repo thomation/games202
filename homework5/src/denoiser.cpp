@@ -16,6 +16,20 @@ void Denoiser::Reprojection(const FrameInfo &frameInfo) {
             // TODO: Reproject
             m_valid(x, y) = false;
             m_misc(x, y) = Float3(0.f);
+            auto curId = frameInfo.m_id(x, y);
+            if (curId < 0)
+                continue;
+            Matrix4x4 curModelToWorld = frameInfo.m_matrix[curId];
+            Matrix4x4 preModelToWorld = frameInfo.m_matrix[curId];
+            Matrix4x4 trans = preWorldToScreen *preModelToWorld * Inverse(curModelToWorld);
+            Float3 prePos = trans(frameInfo.m_position(x, y), Float3::EType::Point);
+            if (prePos.x >= 0 && prePos.x < width && prePos.y >= 0 && prePos.y < height) {
+                auto preId = m_preFrameInfo.m_id(prePos.x, prePos.y);
+                if (preId == curId) {
+					m_valid(x, y) = true;
+                    m_misc(x, y) = m_accColor(prePos.x, prePos.y);
+                }
+            }
         }
     }
     std::swap(m_misc, m_accColor);
@@ -31,7 +45,7 @@ void Denoiser::TemporalAccumulation(const Buffer2D<Float3> &curFilteredColor) {
             // TODO: Temporal clamp
             Float3 color = m_accColor(x, y);
             // TODO: Exponential moving average
-            float alpha = 1.0f;
+            float alpha = 0.0f;
             m_misc(x, y) = Lerp(color, curFilteredColor(x, y), alpha);
         }
     }

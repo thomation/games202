@@ -52,16 +52,16 @@ void Denoise(const filesystem::path &inputDir, const filesystem::path &outputDir
 
 int main() {
     // Box
-    //filesystem::path inputDir("examples/box/input");
-    //filesystem::path outputDir("examples/box/output");
-    //int frameNum = 20;
+    filesystem::path inputDir("examples/box/input");
+    filesystem::path outputDir("examples/box/output");
+    int frameNum = 2;
 
-    ///*
-    // Pink room
-    filesystem::path inputDir("examples/pink-room/input");
-    filesystem::path outputDir("examples/pink-room/output");
-    int frameNum = 1;
-    //*/
+    
+    //// Pink room
+    //filesystem::path inputDir("examples/pink-room/input");
+    //filesystem::path outputDir("examples/pink-room/output");
+    //int frameNum = 2;
+    
 
     Denoise(inputDir, outputDir, frameNum);
     return 0;
