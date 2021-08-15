@@ -54,7 +54,7 @@ int main() {
     // Box
     filesystem::path inputDir("examples/box/input");
     filesystem::path outputDir("examples/box/output");
-    int frameNum = 2;
+    int frameNum = 20;
 
     
     //// Pink room
