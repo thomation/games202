@@ -89,7 +89,7 @@ Buffer2D<Float3> Denoiser::Filter(const FrameInfo &frameInfo) {
                     }
                     else if (px >= 0 && px < width && py >= 0 && py < height) {
 						float dis2 = i * i + j * j;
-                        float dc2 = SqrDistance(frameInfo.m_beauty(px, px), frameInfo.m_beauty(x, y)); 
+                        float dc2 = Sqr(Luminance(frameInfo.m_beauty(px, px)) - Luminance(frameInfo.m_beauty(x, y))); 
                         float dn2 = Sqr(SafeAcos(Dot(frameInfo.m_normal(x, y),
                                          frameInfo.m_normal(px, py))));
                         float pos_dist = Distance(frameInfo.m_position(px, py),
